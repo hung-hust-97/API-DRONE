@@ -1,0 +1,66 @@
+- Fix permission denied
+*php artisan cache:clear
+
+***Fixing Storage Permission
+sudo chmod -R 777 app/storage 
+sudo chown -R $USER:www-data storage
+sudo chmod -R 775 storage
+
+
+
+
+composer dump-autoload *
+
+***Migrations: control database quản lý cũng như lưu trữ lại cấu trúc của database giúp việc sửa đổi dễ dàng hơn ***
+php artisan make:migration TenMigrate  : Tạo migrations thông thường.
+php artisan make:migration TenMigrate --create=TableName  : Tạo migrations cho bảng.
+php artisan make:migration TenMigrate --table=TableName  : Tạo migrations chỉnh sửa bảng.
+
+*Thực thi*
+php artisan migrate	 chạy migration update thêm
+php artisan migrate:reset	 resest lại migration
+php artisan migrate:refresh	 chạy lại migration
+php artisan migrate:status	 xem trạng thái của migration
+php artisan migrate:install	 cài đặt migration
+
+
+***Make models***
+php artisan make:model  models\\Article
+
+
+
+***Model Factories sinh lượng dữ liệu lớn dùng // seeder***
+
+php artisan make:factory ArticleFactory
+
+***seeder***
+***Khi tạo xong database bằng migrations, cần có dữ liệu fake để hiện thị lên web***
+Tạo seeder:
+php artisan make:seeder ArticlesTalbeSeeder
+
+
+***Run fake dữ liệu***
+php artisan db:seed --class=ArticlesTalbeSeeder
+
+
+***Tạo controller test***
+php artisan make:controller ArticleController --resource ( resource sẽ tạo cho ta các func như index , create, store, show, edit, update và destroy và tạo Route cho từng func)
+
+
+***Make Laravel Resourc***
+**Transform dữ liệu model và model collection sang kiểu JSON **
+
+php artisan make:resource ArticleResource
+
+***Cài passport cho laravel 5.8 ***
+composer require laravel/passport:7.5.1
+***Generate keys
+php artisan passport:install --force   Bắt buộc phải install thì mới dùng được passport
+
+***config/auth.php là file cài đặt authentication cho các chuẩn với routes tương ứng***
+***Khi dùng passport thì migrate auto tạo các table, muốn xóa đi thì phải xóa line trong composer.json và chạy nó migrate lại ***
+
+***Mở link public từ storage
+php artisan storage:link
+
+
