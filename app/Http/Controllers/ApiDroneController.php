@@ -23,6 +23,7 @@ use Illuminate\Support\Facades\Hash;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Exists;
 
 class ApiDroneController extends Controller
 {
@@ -156,7 +157,20 @@ class ApiDroneController extends Controller
         //     "specifications"    =>$fcam->specifications,
 
         // ], $this->successStatus);
-        return response()->json($fcam, $this->successStatus);
+         return response()->json([
+            "fid"               => $fcam->fid,
+            "owner_id"          => $fcam->owner_id,
+            "model"             => $fcam->model,
+            "camera"            => $fcam->camera,
+            "maximum_altitude"  => $fcam->maximum_altitude,
+            "maximum_range"     => $fcam->maximum_range,
+            "pin"               => $fcam->pin,
+            "images"            => json_decode($fcam->images),
+            "guarantee"         => json_decode($fcam->guarantee),
+            "specifications"    =>json_decode($fcam->specifications),
+            "history"    =>json_decode($fcam->history),
+
+        ], $this->successStatus);
     }
     
     public function getFlycamByOwenerID(Request $request){
@@ -180,12 +194,127 @@ class ApiDroneController extends Controller
     }
     public function creatFlycamNew(Request $request){
         //Tạo mới flycam
+        $fcam = $request->all();
+        $validator = Validator::make($fcam,[
+            'onwner_id' =>'required',
+            // 'model'=>'required',
+            // 'camera'=>'required',
+            // 'maximum_altitude'=>'required',
+            // 'maximum_range'=>'required',
+            // 'speed'=>'required',
+            // 'pin'=>'required',
+            // 'images'=>'required',
+            // 'guarantee'=>'required',
+            // 'specifications'=>'required',
+            // 'history'=>'required',
+        ],[
+            'onwner_id.required'=>'onwner_id không được để trống',
+            // 'model.required'=>'model không được để trống',
+            // 'camera.required'=>'camera không được để trống',
+            // 'maximum_altitude.required'=>'maximum_altitude không được để trống',
+            // 'maximum_range.required'=>'maximum_range không được để trống',
+            // 'speed.required'=>'speed không được để trống',
+            // 'pin.required'=>'pin không được để trống',
+            // 'images.required'=>'images không được để trống',
+            // 'guarantee.required'=>'guarantee không được để trống',
+            // 'specifications.required'=>'specifications không được để trống',
+            // 'history.required'=>'history không được để trống',
+        ]);
+        if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+        }
+        $creat_fcam["owner_id"] = $fcam["onwner_id"];
+        $creat_fcam["model"] = $fcam["model"];
+        $creat_fcam["camera"] = $fcam["camera"];
+        $creat_fcam["maximum_altitude"] = $fcam["maximum_altitude"];
+        $creat_fcam["maximum_range"] = $fcam["maximum_range"];
+        $creat_fcam["speed"] = $fcam["speed"];
+        $creat_fcam["pin"] = $fcam["pin"];
+        $creat_fcam["images"] = json_encode($fcam["images"]);
+        $creat_fcam["guarantee"] = json_encode($fcam["guarantee"]);
+        $creat_fcam["specifications"] = json_encode($fcam["specifications"]);
         
-
+        $creat_fca = Flycam::create($creat_fcam); 
+        return response()->json([
+            "owner_id" => $creat_fca["owner_id"],
+            "model" => $creat_fca["model"],
+            "camera" => $creat_fca["camera"],
+            "maximum_altitude" => $creat_fca["maximum_altitude"],
+            "maximum_range" => $creat_fca["maximum_range"],
+            "speed" => $creat_fca["speed"],
+            "pin" => $creat_fca["pin"],
+            "images" => json_decode($creat_fca["images"]),
+            "guarantee" => json_decode($creat_fca["guarantee"]),
+            "specifications" => json_decode($creat_fca["specifications"]),
+        ], $this->successStatus);
     }
     public function updateFLycam(Request $request){
         //Update fly cam
+        $fcam = $request->all();
+        $validator = Validator::make($fcam,[
+            'fid' =>'required',
+            // 'model'=>'required',
+            // 'camera'=>'required',
+            // 'maximum_altitude'=>'required',
+            // 'maximum_range'=>'required',
+            // 'speed'=>'required',
+            // 'pin'=>'required',
+            // 'images'=>'required',
+            // 'guarantee'=>'required',
+            // 'specifications'=>'required',
+            // 'history'=>'required',
+        ],[
+            'fid.required'=>'fid không được để trống',
+            // 'model.required'=>'model không được để trống',
+            // 'camera.required'=>'camera không được để trống',
+            // 'maximum_altitude.required'=>'maximum_altitude không được để trống',
+            // 'maximum_range.required'=>'maximum_range không được để trống',
+            // 'speed.required'=>'speed không được để trống',
+            // 'pin.required'=>'pin không được để trống',
+            // 'images.required'=>'images không được để trống',
+            // 'guarantee.required'=>'guarantee không được để trống',
+            // 'specifications.required'=>'specifications không được để trống',
+            // 'history.required'=>'history không được để trống',
+        ]);
+        if ($validator->fails()) { 
+        return response()->json(['error'=>$validator->errors()], 401);            
+        }
+        
+        $creat_fcam["fid"] = $fcam["fid"];
+        
+        $creat_fcam["model"] = $fcam["model"];
+        $creat_fcam["camera"] = $fcam["camera"];
+        $creat_fcam["maximum_altitude"] = $fcam["maximum_altitude"];
+        $creat_fcam["maximum_range"] = $fcam["maximum_range"];
+        $creat_fcam["speed"] = $fcam["speed"];
+        $creat_fcam["pin"] = $fcam["pin"];
+        if($request->exists('images')){
+            $fcam["images"] = json_encode($fcam["images"]);
+        }
 
+        if($request->exists('images')){
+            $fcam["guarantee"] = json_encode($fcam["guarantee"]);
+        }
+        if($request->exists('images')){
+            $fcam["specifications"] = json_encode($fcam["specifications"]);
+        }
+        DB::table('fcam')->where('fid',$request->fid)->update($fcam);
+        $fcam_1 = DB::table('fcam')->where('fid',$request->fid)->first();
+        
+        return response()->json([
+            "fid" => $fcam_1->fid,
+            "owner_id" => $fcam_1->owner_id,
+            "model" => $fcam_1->model,
+            "camera" => $fcam_1->camera,
+            "maximum_altitude" => $fcam_1->maximum_altitude,
+            "maximum_range" => $fcam_1->maximum_range,
+            "speed" => $fcam_1->speed,
+            "pin" => $fcam_1->pin,
+            "images" => json_decode($fcam_1->images),
+            "guarantee" => json_decode($fcam_1->guarantee),
+            // "specifications" => json_decode($fcam_1->specifications),
+        ], $this->successStatus);
+        
 
     }
 

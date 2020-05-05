@@ -20,13 +20,14 @@ class CreateFlycam extends Migration
             $table->foreign('owner_id')->references("id")->on("users");
             $table->string("model");
             $table->string("camera")->nullable()->default(null);
-            $table->string("max_al")->nullable()->default(null);
-            $table->string("max_range")->nullable()->default(null);
+            $table->string("maximum_altitude")->nullable()->default(null);
+            $table->string("maximum_range")->nullable()->default(null);
             $table->string("speed")->nullable()->default(null);
             $table->string("pin")->nullable()->default(null);
             $table->text("images")->nullable()->default(null);
-            $table->string("guarantees")->nullable()->default(null);
-            $table->string("specifications")->nullable()->default(null);
+            $table->string("guarantee")->nullable()->default(null);
+            $table->text("specifications")->nullable()->default(null);
+            $table->string("history")->nullable()->default(null);
             $table->timestamps();
         });
     }
